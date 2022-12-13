@@ -1,14 +1,18 @@
 import { Form, message } from "antd";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../../apiCalls/users";
+import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const onFinish = async (values) => {
     try {
+      dispatch(ShowLoading);
       const response = await loginUser(values);
-
+      dispatch(HideLoading);
       if (response.success) {
         message.success(response.message);
         localStorage.setItem("token", response.data);
@@ -18,6 +22,7 @@ const Login = () => {
         navigate("/register");
       }
     } catch (error) {
+      dispatch(HideLoading);
       message.error(error.message);
     }
   };

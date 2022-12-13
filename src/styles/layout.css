@@ -25,9 +25,9 @@
   color: white !important;
 }
 
-.active-menu-item{
-    border: 2px solid white;
-    border-radius: 5px;
+.active-menu-item {
+  border: 2px solid black;
+  border-radius: 5px;
 }
 
 .body {
