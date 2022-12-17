@@ -1,5 +1,5 @@
 const { default: axiosInstance } = require(".");
-
+// ------------------------------EXAM API------------------------------------------
 // add exam
 
 export const addExam = async (payload) => {
@@ -55,6 +55,49 @@ export const deleteExamById = async (payload) => {
   try {
     const response = await axiosInstance.post(
       "/api/exams/delete-exam-by-id",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
+// ------------------------------QUESTION API----------------------------------------
+
+// add question to exam
+
+export const addQuestionToExam = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/exams/add-question-to-exam",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
+// edit question
+export const editQuestionById = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/exams/edit-question-in-exam",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
+// delete question
+
+export const deleteQuestionById = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/exams/delete-question-in-exam",
       payload
     );
     return response.data;

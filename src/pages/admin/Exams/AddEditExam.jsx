@@ -1,8 +1,9 @@
-import { Col, Form, message, Row, Tabs } from "antd";
+import { Col, Form, message, Row, Table, Tabs } from "antd";
 // import FormItem from "antd/es/form/FormItem";
 import React from "react";
 import {
   addExam,
+  deleteQuestionById,
   editExamById,
   getAllExams,
   getExamById,
@@ -14,12 +15,14 @@ import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
 import { useState } from "react";
 import { useEffect } from "react";
 import AddEditQuestion from "./AddEditQuestion";
+import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 const { TabPane } = Tabs;
 
 const AddEditExam = () => {
   const [examData, setExamData] = useState(null);
   const [showAddEditQuestionModal, setShowAddEditQuestionModal] =
     useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -72,6 +75,78 @@ const AddEditExam = () => {
       getExamData();
     }
   }, []);
+
+  const deleteQuestion = async (questionId) => {
+    try {
+      dispatch(ShowLoading());
+      const response = await deleteQuestionById({
+        questionId,
+        examId: params.id,
+      });
+      dispatch(HideLoading());
+      if (response.success) {
+        message.success(response.message);
+        getExamData();
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
+
+  // Table Columns
+  const questionsColumns = [
+    {
+      title: "Question",
+      dataIndex: "name",
+    },
+    {
+      title: "Options",
+      dataIndex: "options",
+      render: (text, record) => {
+        return Object.keys(record.options).map((key) => {
+          return (
+            <div>
+              {key} : {record.options[key]}
+            </div>
+          );
+        });
+      },
+    },
+    {
+      title: "Correct Option",
+      dataIndex: "correctOption",
+      render: (text, record) => {
+        return ` ${record.correctOption} : ${
+          record.options[record.correctOption]
+        }`;
+      },
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: (text, record) => (
+        <div className="flex gap-2">
+          <AiOutlineEdit
+            className="cursor-pointer"
+            onClick={() => {
+              setSelectedQuestion(record);
+              setShowAddEditQuestionModal(true);
+            }}
+          />
+
+          <AiOutlineDelete
+            className="cursor-pointer"
+            onClick={() => {
+              deleteQuestion(record._id);
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -170,6 +245,12 @@ const AddEditExam = () => {
                     Add Question
                   </button>
                 </div>
+
+                {/* TABLE */}
+                <Table
+                  columns={questionsColumns}
+                  dataSource={examData?.questions || []}
+                />
               </TabPane>
             )}
           </Tabs>
@@ -184,6 +265,8 @@ const AddEditExam = () => {
           showAddEditQuestionModal={showAddEditQuestionModal}
           examId={params.id}
           refreshData={getExamData}
+          selectedQuestion={selectedQuestion}
+          setSelectedQuestion={setSelectedQuestion}
         />
       )}
     </div>

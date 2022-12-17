@@ -4,6 +4,8 @@
 
 .card-lg {
   box-shadow: 0 0 2px rgb(128, 128, 128);
+  min-width: 200px;
+  min-height: 200px;
 }
 
 .divider {
@@ -46,7 +48,7 @@
 .result {
   box-shadow: rgba(75, 75, 75, 0.638) 0px 0px 2px;
   padding: 30px;
-  color: white !important;
+  color: black !important;
   border-radius: 5px;
 }
 
