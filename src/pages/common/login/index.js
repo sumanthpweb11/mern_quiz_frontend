@@ -10,9 +10,9 @@ const Login = () => {
   const navigate = useNavigate();
   const onFinish = async (values) => {
     try {
-      dispatch(ShowLoading);
+      dispatch(ShowLoading());
       const response = await loginUser(values);
-      dispatch(HideLoading);
+      dispatch(HideLoading());
       if (response.success) {
         message.success(response.message);
         localStorage.setItem("token", response.data);
@@ -22,13 +22,13 @@ const Login = () => {
         navigate("/register");
       }
     } catch (error) {
-      dispatch(HideLoading);
+      dispatch(HideLoading());
       message.error(error.message);
     }
   };
 
   return (
-    <div className="bg-stone-50 flex justify-center items-center h-screen w-screen bg-primary">
+    <div className="bg-stone-50 flex justify-center items-center h-screen w-screen ">
       <div className="card  p-2  ">
         <div className="flex flex-col p-7 border shadow-xl border-black-900">
           <div className="flex">

@@ -48,30 +48,47 @@ const WriteExam = () => {
 
   // CALCULATE RESULT FUNCTION
   const calculateResult = async () => {
-    let correctAnswers = [];
-    let wrongAnswers = [];
+    try {
+      let correctAnswers = [];
+      let wrongAnswers = [];
 
-    questions.forEach((question, index) => {
-      // question.correctOption from exam modal
-      if (question.correctOption === selectedOptions[index]) {
-        correctAnswers.push(question);
-      } else {
-        wrongAnswers.push(question);
+      questions.forEach((question, index) => {
+        // question.correctOption from exam modal
+        if (question.correctOption === selectedOptions[index]) {
+          correctAnswers.push(question);
+        } else {
+          wrongAnswers.push(question);
+        }
+      });
+
+      let verdict = "Pass";
+      if (correctAnswers.length < examData.passingMarks) {
+        verdict = "Fail";
       }
-    });
 
-    let verdict = "Pass";
-    if (correctAnswers.length < examData.passingMarks) {
-      verdict = "Fail";
+      const tempResult = {
+        correctAnswers,
+        wrongAnswers,
+        verdict,
+      };
+
+      setResult(tempResult);
+      dispatch(ShowLoading());
+      const response = await addReport({
+        exam: params.id,
+        result: tempResult,
+        user: user._id,
+      });
+      dispatch(HideLoading());
+      if (response.success) {
+        setView("result");
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
     }
-
-    setResult({
-      correctAnswers,
-      wrongAnswers,
-      verdict,
-    });
-
-    setView("result");
   };
 
   const startTimer = () => {
@@ -197,9 +214,9 @@ const WriteExam = () => {
                     // first calculate result
                     // and then navigate / render
                     // result page
-                    setTimeUp(true);
+
                     clearInterval(intervalId);
-                    calculateResult();
+                    setTimeUp(true);
                   }}
                   type="submit"
                 >
@@ -229,6 +246,17 @@ const WriteExam = () => {
                   Passing Marks: {examData.passingMarks}
                 </h1>
                 <h1 className="text-md">Verdict: {result.verdict} </h1>
+
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => {
+                      setView("review");
+                    }}
+                    className="p-2 text-md border border-b-black flex justify-center items-center hover:bg-zinc-100"
+                  >
+                    Review Answers
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -257,7 +285,7 @@ const WriteExam = () => {
         {/* RESULT VIEW */}
 
         {/* REVIEW VIEW */}
-        {/* {view === "review" && (
+        {view === "review" && (
           <div className="flex flex-col gap-2">
             {questions.map((question, index) => {
               const isCorrect =
@@ -295,20 +323,9 @@ const WriteExam = () => {
               >
                 Close
               </button>
-              <button
-                className="primary-contained-btn"
-                onClick={() => {
-                  setView("instructions");
-                  setSelectedQuestionIndex(0);
-                  setSelectedOptions({});
-                  setSecondsLeft(examData.duration);
-                }}
-              >
-                Retake Exam
-              </button>
             </div>
           </div>
-        )} */}
+        )}
         {/* REVIEW VIEW */}
       </div>
     )

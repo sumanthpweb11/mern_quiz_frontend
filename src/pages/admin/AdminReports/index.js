@@ -1,20 +1,30 @@
 import React, { useState } from "react";
 import PageTitle from "../../../components/PageTitle";
-import { message, Modal, Table } from "antd";
+import { message, Table } from "antd";
 import { useDispatch } from "react-redux";
 import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
-import { getAllReportsByUser } from "../../../apiCalls/reports";
+import { getAllReports } from "../../../apiCalls/reports";
 import { useEffect } from "react";
 import moment from "moment";
 
-function UserReports() {
+function AdminReports() {
   const [reportsData, setReportsData] = useState([]);
+  const [filters, setFilters] = useState({
+    examName: "",
+    userName: "",
+  });
   const dispatch = useDispatch();
   const columns = [
     {
       title: "Exam Name",
       dataIndex: "examName",
       render: (text, record) => <>{record.exam.name}</>,
+    },
+
+    {
+      title: "User Name",
+      dataIndex: "userName",
+      render: (text, record) => <>{record.user.name}</>,
     },
     {
       title: "Date",
@@ -45,10 +55,10 @@ function UserReports() {
     },
   ];
 
-  const getData = async () => {
+  const getData = async (tempFilters) => {
     try {
       dispatch(ShowLoading());
-      const response = await getAllReportsByUser();
+      const response = await getAllReports(tempFilters);
       if (response.success) {
         setReportsData(response.data);
       } else {
@@ -62,16 +72,52 @@ function UserReports() {
   };
 
   useEffect(() => {
-    getData();
+    getData(filters);
   }, []);
 
   return (
     <div>
       <PageTitle title="Reports" />
-      <hr />
-      <Table columns={columns} dataSource={reportsData} />
+      <div className="divider"></div>
+      <div className="flex gap-2 ">
+        <input
+          value={filters.examName}
+          onChange={(e) => setFilters({ ...filters, examName: e.target.value })}
+          type="text"
+          placeholder="exam"
+        />
+        <input
+          value={filters.userName}
+          onChange={(e) => setFilters({ ...filters, userName: e.target.value })}
+          type="text"
+          placeholder="user"
+        />
+        <button
+          onClick={() => getData(filters)}
+          className="p-2 text-bold flex justify-center items-center hover:bg-green-300 bg-green-200"
+        >
+          search
+        </button>
+
+        <button
+          onClick={() => {
+            setFilters({
+              examName: "",
+              userName: "",
+            });
+            getData({
+              examName: "",
+              userName: "",
+            });
+          }}
+          className="p-2 text-bold flex justify-center items-center hover:bg-yellow-300 bg-yellow-200"
+        >
+          clear
+        </button>
+      </div>
+      <Table columns={columns} dataSource={reportsData} className="mt-2" />
     </div>
   );
 }
 
-export default UserReports;
+export default AdminReports;

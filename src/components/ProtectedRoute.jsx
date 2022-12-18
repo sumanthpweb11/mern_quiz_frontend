@@ -34,11 +34,11 @@ function ProtectedRoute({ children }) {
 
     {
       title: "Reports",
-      paths: ["/reports"],
+      paths: ["/user/reports"],
       icon: (
         <HiOutlineDocumentReport
           onClick={() => {
-            navigate("/reports");
+            navigate("/user/reports");
           }}
         />
       ),
