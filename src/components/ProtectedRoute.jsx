@@ -127,35 +127,35 @@ function ProtectedRoute({ children }) {
     },
   ];
 
-  const getUserData = async () => {
-    try {
-      dispatch(ShowLoading());
-      const response = await getUserInfo();
-      dispatch(HideLoading());
-      if (response.success) {
-        dispatch(SetUser(response.data));
-        if (response.data.isAdmin) {
-          setMenu(adminMenu);
-        } else {
-          setMenu(userMenu);
-        }
-      } else {
-        message.error(response.message);
-      }
-    } catch (error) {
-      navigate("/login");
-      dispatch(HideLoading());
-      message.error(error.message);
-    }
-  };
-
   useEffect(() => {
+    const getUserData = async () => {
+      try {
+        dispatch(ShowLoading());
+        const response = await getUserInfo();
+        dispatch(HideLoading());
+        if (response.success) {
+          dispatch(SetUser(response.data));
+          if (response.data.isAdmin) {
+            setMenu(adminMenu);
+          } else {
+            setMenu(userMenu);
+          }
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        navigate("/login");
+        dispatch(HideLoading());
+        message.error(error.message);
+      }
+    };
+
     if (localStorage.getItem("token")) {
       getUserData();
     } else {
       navigate("/login");
     }
-  }, []);
+  }, [dispatch, navigate, userMenu]);
 
   const activeRoute = window.location.pathname;
 
