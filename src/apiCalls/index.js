@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://mern_quiz_api.onrender.com",
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
